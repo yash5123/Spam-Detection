@@ -64,7 +64,7 @@ The backend is a FastAPI app that loads the TF-IDF + Logistic Regression pipelin
 
 - **Pydantic Validation** - All request bodies are validated against a strict Pydantic schema before reaching the model. Empty strings and messages over 5,000 characters get a clean `422` response with a readable error message.
 
-- **Word-Level Explainability** - The `/predict` endpoint extracts feature log-probabilities from the trained `MultinomialNB` classifier to compute per-word spam vs. ham scores for every token present in the input. The top 5 scoring tokens above a threshold are returned alongside the verdict.
+- **Word-Level Explainability** - The `/predict` endpoint extracts model coefficients from the trained classifier to compute per-word spam vs. ham scores for every token present in the input. The top 5 scoring tokens above a threshold are returned alongside the verdict.
 
 - **Auto-Generated API Docs** - FastAPI provides Swagger UI at `/docs` with no extra configuration. Every endpoint is documented with request/response schemas and examples.
 
@@ -78,7 +78,7 @@ The backend is a FastAPI app that loads the TF-IDF + Logistic Regression pipelin
 | ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white) | TF-IDF vectorizer and Logistic Regression classifier packaged as a single `Pipeline` |
 | ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white) | Prediction and health API with automatic Pydantic validation and Swagger docs |
 | ![Uvicorn](https://img.shields.io/badge/Uvicorn-2D6A4F?style=for-the-badge) | ASGI server that runs FastAPI with async I/O support |
-| ![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white) | Loads and cleans the 5,572-row SMS dataset from CSV |
+| ![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white) | Loads and cleans the 11,300-row hybrid SMS + Email dataset from CSV |
 | ![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white) | Numerical operations during prediction and probability extraction |
 | ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white) | Semantic page structure with accessible ARIA labels and live regions |
 | ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white) | Custom design system, CSS variables, spectrogram keyframe animations |
@@ -97,14 +97,14 @@ These plots are generated during training and saved to `model/results/`.
 ### Confusion Matrix
 <img src="model/results/confusion_matrix.png" width="60%" />
 
-*Near-zero false positives - the model almost never marks a real message as spam, which is the metric that matters most in practice.*
+*The model maintains a strong balance between catching spam and protecting legitimate messages.*
 
 <br/>
 
 ### Classification Report
 <img src="model/results/classification_report.png" width="75%" />
 
-*99% spam precision means only 1 in 100 spam flags is wrong. 86% recall means 14% of actual spam slips through - a deliberate tradeoff to protect legitimate messages.*
+*92% spam precision with 92% recall - a balanced tradeoff that catches most spam while keeping false positives low.*
 
 <br/>
 
