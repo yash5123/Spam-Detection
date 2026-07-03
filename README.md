@@ -124,6 +124,10 @@ These plots are generated during training and saved to `model/results/`.
 
 ```
 Spam Detection/
+├── app/
+│   └── main.py                 # FastAPI app - routes, validation, word-level signals
+├── notebook/
+│   └── train_model.ipynb       # Full training, evaluation, and plot generation
 ├── data/
 │   └── spam.csv                # 5,572-row UCI SMS Spam Collection dataset
 ├── model/
@@ -135,8 +139,6 @@ Spam Detection/
 │   ├── index.html              # App markup and structure
 │   ├── style.css               # Design system, animations, signal chip styles
 │   └── script.js               # API calls, state machine, signal inspector renderer
-├── main.py                     # FastAPI app - routes, validation, word-level signals
-├── train_model.ipynb           # Full training, evaluation, and plot generation
 ├── requirements.txt            # Pinned dependencies
 └── README.md
 ```
@@ -208,10 +210,12 @@ cd "Spam-Detection"
 pip install -r requirements.txt
 
 # 3. (Optional) Retrain the model
+cd notebook
 jupyter notebook train_model.ipynb
+cd ..
 
 # 4. Start the server
-uvicorn main:app --host 127.0.0.1 --port 8000
+uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
 Open `http://127.0.0.1:8000/` - the frontend is served automatically.

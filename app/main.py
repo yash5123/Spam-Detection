@@ -7,7 +7,9 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, field_validator
 import numpy as np
 
-model_path = os.path.join(os.path.dirname(__file__) or '.', 'model', 'model.pkl')
+# Resolve project root from app/main.py
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+model_path = os.path.join(project_root, 'model', 'model.pkl')
 pipeline = joblib.load(model_path)
 
 app = FastAPI(title="Spam Detection API", version="1.0.0")
@@ -101,7 +103,7 @@ def predict(message: Message):
     )
 
 
-static_dir = os.path.join(os.path.dirname(__file__) or '.', 'static')
+static_dir = os.path.join(project_root, 'static')
 
 
 @app.get("/")
