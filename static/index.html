@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spam Filter</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230f172a'/><path d='M7 8h18L19 18v7h-6v-7Z' fill='%23e2e8f0'/></svg>">
+    <meta name="description" content="A minimalist de-noising tool for detecting spam anomalies in text communication.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="grain-overlay" aria-hidden="true"></div>
+
+    <main class="analyzer-card">
+        <header class="card-header">
+            <div class="app-info">
+                <span class="pulse-indicator" id="pulse-dot"></span>
+                <h1 class="app-title">SPAM FILTER</h1>
+            </div>
+        </header>
+
+        <!-- Input Section -->
+        <section class="input-section">
+            <div class="section-label">
+                <span class="label-text">MESSAGE TEXT</span>
+                <span class="label-mono char-count" id="char-count">0000/5000</span>
+            </div>
+            <div class="input-wrapper">
+                <textarea 
+                    id="message-input" 
+                    placeholder="Paste or type your message here to check for spam..." 
+                    maxlength="5000"
+                    rows="4"
+                ></textarea>
+                <div class="analysis-beam" id="analysis-beam" hidden></div>
+            </div>
+            <div class="action-row">
+                <button id="check-btn" class="action-btn" type="button" aria-label="Analyze message for spam">
+                    <span class="btn-text">CHECK FOR SPAM</span>
+                    <span class="btn-arrow" aria-hidden="true">→</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Spectrogram (Signature Element) -->
+        <section class="spectrogram-section" id="spectrogram-section" aria-live="polite" aria-atomic="true">
+            <div class="section-label">
+                <span class="label-text">ANALYSIS VISUALIZER</span>
+                <span class="label-mono" id="status-text">READY TO CHECK</span>
+            </div>
+
+            <div class="visualizer-stage">
+                <!-- 12 Equalizer Bars -->
+                <div class="spectrogram-container" id="spectrogram">
+                    <div class="spec-bar" style="--height: 30%"></div>
+                    <div class="spec-bar" style="--height: 45%"></div>
+                    <div class="spec-bar" style="--height: 60%"></div>
+                    <div class="spec-bar" style="--height: 50%"></div>
+                    <div class="spec-bar" style="--height: 35%"></div>
+                    <div class="spec-bar" style="--height: 25%"></div>
+                    <div class="spec-bar" style="--height: 40%"></div>
+                    <div class="spec-bar" style="--height: 55%"></div>
+                    <div class="spec-bar" style="--height: 70%"></div>
+                    <div class="spec-bar" style="--height: 50%"></div>
+                    <div class="spec-bar" style="--height: 35%"></div>
+                    <div class="spec-bar" style="--height: 20%"></div>
+                </div>
+
+                <!-- Metrics overlay on side -->
+                <div class="metrics-overlay" id="metrics-overlay" hidden>
+                    <div class="metric-group">
+                        <span class="metric-label">VERDICT</span>
+                        <span class="metric-value" id="signal-state">CLEAN</span>
+                    </div>
+                    <div class="metric-group">
+                        <span class="metric-label">CONFIDENCE</span>
+                        <span class="metric-value" id="confidence-val">00.0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnostics log / Reset controls -->
+            <div class="diagnostics-log" id="diagnostics-log" hidden>
+                <div class="diagnostics-content">
+                    <p class="diagnostics-desc" id="diagnostics-desc">No spam signatures detected. This message appears to be safe.</p>
+                    <div class="signal-inspector" id="signal-inspector" hidden>
+                        <span class="inspector-title">KEY SIGNALS DETECTED</span>
+                        <div class="signals-list" id="signals-list"></div>
+                    </div>
+                </div>
+                <button id="try-again-btn" class="reset-btn" type="button">NEW CHECK</button>
+            </div>
+
+            <!-- Error container -->
+            <div class="error-container" id="error-container" hidden>
+                <div class="error-header">
+                    <span class="error-badge">ERR.0x9C</span>
+                    <span class="error-message" id="error-text">Failed to establish model connection.</span>
+                </div>
+                <button id="retry-btn" class="reset-btn" type="button">RETRY CONNECTION</button>
+            </div>
+        </section>
+
+        <!-- Reference Payloads -->
+        <section class="payload-section">
+            <div class="section-label">
+                <span class="label-text">SELECT AN EXAMPLE MESSAGE</span>
+            </div>
+            <div class="payloads-grid">
+                <button class="payload-chip" type="button" data-text="CONGRATULATIONS! You've been selected for a free iPhone 15! Click here to claim: bit.ly/free-prize NOW!">
+                    SPAM EXAMPLE 1
+                </button>
+                <button class="payload-chip" type="button" data-text="Hey, are we still meeting for lunch tomorrow at the usual place?">
+                    HAM EXAMPLE 1
+                </button>
+                <button class="payload-chip" type="button" data-text="URGENT: Your bank account has been compromised! Call 0800-FAKE-NUM immediately to secure your account!">
+                    SPAM EXAMPLE 2
+                </button>
+                <button class="payload-chip" type="button" data-text="Can you pick up some milk on your way home? We're also out of bread.">
+                    HAM EXAMPLE 2
+                </button>
+            </div>
+        </section>
+
+        <footer class="card-footer">
+            <div class="footer-stats">
+                <span>TRAINED ON: 5,572 SMS</span>
+                <span>SPAM F1: 92.09%</span>
+                <span>MODEL: NAIVE BAYES</span>
+            </div>
+        </footer>
+    </main>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
+
