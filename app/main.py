@@ -59,12 +59,18 @@ def get_model_signals(text: str, prediction: str) -> list[dict]:
         if len(nonzero_indices) == 0:
             return []
             
-        if prediction == "spam":
-            # Spam log probability relative difference
-            scores = clf.feature_log_prob_[1] - clf.feature_log_prob_[0]
+        if hasattr(clf, "feature_log_prob_"):
+            if prediction == "spam":
+                scores = clf.feature_log_prob_[1] - clf.feature_log_prob_[0]
+            else:
+                scores = clf.feature_log_prob_[0] - clf.feature_log_prob_[1]
+        elif hasattr(clf, "coef_"):
+            if prediction == "spam":
+                scores = clf.coef_[0]
+            else:
+                scores = -clf.coef_[0]
         else:
-            # Ham log probability relative difference
-            scores = clf.feature_log_prob_[0] - clf.feature_log_prob_[1]
+            return []
             
         signals = []
         for idx in nonzero_indices:

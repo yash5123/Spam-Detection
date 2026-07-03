@@ -2,7 +2,7 @@
 
 # `SPAM FILTER`
 
-**Instant spam detection powered by Naive Bayes**
+**Instant spam detection powered by machine learning**
 
 ![Python](https://img.shields.io/badge/Python-3.13+-3776AB?style=flat-square&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
@@ -22,14 +22,14 @@
 > [!IMPORTANT]
 > **Model Training Notebook**: The full pipeline - data loading, preprocessing, model training, and evaluation - is available in [`train_model.ipynb`](notebook/train_model.ipynb).
 
-This is a full-stack spam classifier that takes any SMS or message text and instantly tells you whether it is spam or a legitimate message, powered by a Multinomial Naive Bayes model trained on 5,572 real SMS records from the UCI Spam Collection dataset.
+This is a full-stack spam classifier that takes any SMS or email text and instantly tells you whether it is spam or a legitimate message, powered by a Logistic Regression model trained on a hybrid dataset of 11,300 messages (5,572 SMS + 5,728 Emails).
 
 You paste a message, hit a button, and the 12-bar animated spectrogram reacts to the verdict - spiking to full amplitude for spam, damping down to calm low bars for clean messages. Underneath the visualizer, the **Signal Inspector** surfaces the exact words that drove the model's decision, each tagged with its log-odds weight, so you can see precisely why the model flagged something.
 
-The backend is a FastAPI app that loads the TF-IDF + Naive Bayes pipeline once at startup and serves predictions from memory. The frontend is hand-crafted HTML, CSS, and JavaScript with a Scandinavian-inspired light-mode palette - no CSS framework, no JavaScript library.
+The backend is a FastAPI app that loads the TF-IDF + Logistic Regression pipeline once at startup and serves predictions from memory. The frontend is hand-crafted HTML, CSS, and JavaScript with a Scandinavian-inspired light-mode palette - no CSS framework, no JavaScript library.
 
 > [!NOTE]
-> The model achieves a **Spam F1-score of 92.09%** with **99% precision** - meaning it almost never flags a legitimate message as spam. That matters more than raw accuracy for a spam filter.
+> The model achieves a **Spam F1-score of 91.85%** with **92% precision and 92% recall** on a hybrid SMS + Email dataset. This ensures it catches email spam while staying accurate on text messages.
 
 ---
 
@@ -37,7 +37,7 @@ The backend is a FastAPI app that loads the TF-IDF + Naive Bayes pipeline once a
 
 ### Core Classification Engine
 
-- **Instant Verdict** - Paste any text, get a Spam or Clean result in milliseconds. The model runs TF-IDF vectorization and Naive Bayes inference entirely in memory on every request.
+- **Instant Verdict** - Paste any text, get a Spam or Clean result in milliseconds. The model runs TF-IDF vectorization and Logistic Regression inference entirely in memory on every request.
 
 - **Signal Inspector** - After every analysis, the top 5 words that most influenced the verdict appear as tagged chips with their log-odds scores (e.g. `won +5.7`, `urgent +3.9`). These are the model's actual internal weights, not guesses.
 
@@ -75,7 +75,7 @@ The backend is a FastAPI app that loads the TF-IDF + Naive Bayes pipeline once a
 | Technology | Role in this project |
 |---|---|
 | ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) | Core runtime for data processing, model training, and the API server |
-| ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white) | TF-IDF vectorizer and Multinomial Naive Bayes classifier packaged as a single `Pipeline` |
+| ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white) | TF-IDF vectorizer and Logistic Regression classifier packaged as a single `Pipeline` |
 | ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white) | Prediction and health API with automatic Pydantic validation and Swagger docs |
 | ![Uvicorn](https://img.shields.io/badge/Uvicorn-2D6A4F?style=for-the-badge) | ASGI server that runs FastAPI with async I/O support |
 | ![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white) | Loads and cleans the 5,572-row SMS dataset from CSV |
@@ -84,7 +84,7 @@ The backend is a FastAPI app that loads the TF-IDF + Naive Bayes pipeline once a
 | ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white) | Custom design system, CSS variables, spectrogram keyframe animations |
 | ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) | API calls, state management, signal chip rendering, and spectrogram control |
 
-The stack was chosen deliberately. Naive Bayes is fast, interpretable, and performs extremely well on bag-of-words text classification. FastAPI keeps the backend minimal while auto-generating docs. Vanilla frontend because this app does not need a framework to render a textarea and a few result chips.
+The stack was chosen deliberately. Logistic Regression is fast, interpretable, and performs extremely well on bag-of-words text classification across both SMS and email domains. FastAPI keeps the backend minimal while auto-generating docs. Vanilla frontend because this app does not need a framework to render a textarea and a few result chips.
 
 ---
 
@@ -111,7 +111,7 @@ These plots are generated during training and saved to `model/results/`.
 ### Model Comparison
 <img src="model/results/model_comparison.png" width="75%" />
 
-*Comparison of Multinomial Naive Bayes against alternative classifiers evaluated on the same train/test split.*
+*Comparison of classifiers evaluated on the same train/test split of the hybrid dataset.*
 
 </div>
 
@@ -128,9 +128,10 @@ Spam Detection/
 ├── notebook/
 │   └── train_model.ipynb       # Full training, evaluation, and plot generation
 ├── data/
-│   └── spam.csv                # 5,572-row UCI SMS Spam Collection dataset
+│   ├── spam.csv                # 5,572-row UCI SMS Spam Collection dataset
+│   └── emails.csv              # 5,728-row Enron/SpamAssassin email dataset
 ├── model/
-│   ├── model.pkl               # Serialized TF-IDF + Naive Bayes pipeline
+│   ├── model.pkl               # Serialized TF-IDF + Logistic Regression pipeline
 │   └── results/                # Confusion matrix and classification report plots
 │       ├── confusion_matrix.png
 │       └── classification_report.png
@@ -146,23 +147,23 @@ Spam Detection/
 
 | | |
 |---|---|
-| **Dataset** | UCI SMS Spam Collection, 5,572 messages, no missing values |
-| **Classes** | `spam` (747 messages, 13.4%) / `ham` (4,825 messages, 86.6%) |
+| **Dataset** | Hybrid SMS & Email (5,572 SMS + 5,728 Emails, 11,300 total) |
+| **Classes** | `spam` (2,115 messages, 18.7%) / `ham` (9,185 messages, 81.3%) |
 | **Preprocessing** | Lowercase, URL removal, punctuation strip, whitespace normalization |
 | **Vectorizer** | `TfidfVectorizer` with `ngram_range=(1,2)` to capture multi-word patterns |
-| **Classifier** | `MultinomialNB` - fast, interpretable, strong baseline for text classification |
+| **Classifier** | `LogisticRegression` - balanced precision and recall on hybrid text data |
 | **Pipeline** | Scikit-learn `Pipeline(['tfidf', 'clf'])` - vectorization and inference in one call |
 | **Train / test split** | 80% / 20%, `random_state=42` |
-| **Spam Precision** | 99% |
-| **Spam Recall** | 86% |
-| **Spam F1** | 92.09% |
+| **Spam Precision** | 92% |
+| **Spam Recall** | 92% |
+| **Spam F1** | 91.85% |
 
-**Why Naive Bayes over a more complex model?**
+**Why Logistic Regression over Naive Bayes?**
 
-For SMS spam detection with a bag-of-words feature space, Naive Bayes consistently matches or beats heavier models (SVM, Logistic Regression) while training in milliseconds and staying fully interpretable. The `feature_log_prob_` attribute - the log-probability of each word given each class - is what powers the Signal Inspector. A deep model would lose that direct word-level explainability.
+With the broader hybrid dataset (covering both SMS and longer emails), Logistic Regression outperformed Naive Bayes (Spam F1-score of 91.85% vs. 89.77%). It achieves a better balance between precision and recall (92% for both), ensuring fewer spam emails slip through while maintaining robust explainability using the model coefficients (`coef_`) for the Signal Inspector.
 
 > [!NOTE]
-> **Precision vs. Recall tradeoff**: A spam filter should almost never block a legitimate message. This model is tuned to be conservative - 99% precision means only 1 false positive per 100 spam flags. The cost is 14% of real spam slipping through (recall of 86%), which is the right tradeoff for a general-purpose message checker.
+> **Precision vs. Recall tradeoff**: With a broader email/SMS dataset, we optimized for a balanced model. A **92% precision** score means only ~8 out of 100 spam flags are false positives. Meanwhile, a **92% recall** score ensures that only 8% of actual spam slips through (compared to 14% on the older model).
 
 ### API Reference
 
