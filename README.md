@@ -1,22 +1,21 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=180&section=header&text=Spam%20Filter&fontSize=52&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Instant%20spam%20detection%20powered%20by%20Naive%20Bayes&descSize=16&descAlignY=55"/>
-<br/>
+# `SPAM FILTER`
 
-![Python](https://img.shields.io/badge/Python-3.13+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+**Instant spam detection powered by Naive Bayes**
 
-<br/>
+![Python](https://img.shields.io/badge/Python-3.13+-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
 
 *Paste a message. Know in milliseconds if it's spam.*
 
 </div>
 
-<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" />
+---
 
 ## About
 
@@ -32,7 +31,7 @@ The backend is a FastAPI app that loads the TF-IDF + Naive Bayes pipeline once a
 > [!NOTE]
 > The model achieves a **Spam F1-score of 92.09%** with **99% precision** - meaning it almost never flags a legitimate message as spam. That matters more than raw accuracy for a spam filter.
 
-<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" />
+---
 
 ## Features
 
@@ -69,7 +68,7 @@ The backend is a FastAPI app that loads the TF-IDF + Naive Bayes pipeline once a
 
 - **Auto-Generated API Docs** - FastAPI provides Swagger UI at `/docs` with no extra configuration. Every endpoint is documented with request/response schemas and examples.
 
-<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" />
+---
 
 ## Built With
 
@@ -87,7 +86,7 @@ The backend is a FastAPI app that loads the TF-IDF + Naive Bayes pipeline once a
 
 The stack was chosen deliberately. Naive Bayes is fast, interpretable, and performs extremely well on bag-of-words text classification. FastAPI keeps the backend minimal while auto-generating docs. Vanilla frontend because this app does not need a framework to render a textarea and a few result chips.
 
-<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" />
+---
 
 ## Model Evaluation
 
@@ -116,7 +115,7 @@ These plots are generated during training and saved to `model/results/`.
 
 </div>
 
-<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" />
+---
 
 ## Technical Details
 
@@ -245,14 +244,12 @@ Deployed on **Render** as a single web service. FastAPI serves both the API rout
 > [!TIP]
 > The scikit-learn version **must match** between your training environment and your serving environment. A version mismatch can cause `joblib.load()` to fail or silently alter predictions. Pin the version in `requirements.txt` and do not upgrade it without retraining.
 
-<img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" />
+---
 
 <div align="center">
 
 ### Made by Yash
 
-![GitHub](https://img.shields.io/badge/GitHub-yash5123-181717?style=for-the-badge&logo=github)
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=100&section=footer"/>
+[![GitHub](https://img.shields.io/badge/GitHub-yash5123-181717?style=flat-square&logo=github)](https://github.com/yash5123)
 
 </div>
