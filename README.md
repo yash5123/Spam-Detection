@@ -21,7 +21,7 @@
 ## About
 
 > [!IMPORTANT]
-> **Model Training Notebook**: The full pipeline - data loading, preprocessing, model training, and evaluation - is available in [`train_model.ipynb`](train_model.ipynb).
+> **Model Training Notebook**: The full pipeline - data loading, preprocessing, model training, and evaluation - is available in [`train_model.ipynb`](notebook/train_model.ipynb).
 
 This is a full-stack spam classifier that takes any SMS or message text and instantly tells you whether it is spam or a legitimate message, powered by a Multinomial Naive Bayes model trained on 5,572 real SMS records from the UCI Spam Collection dataset.
 
