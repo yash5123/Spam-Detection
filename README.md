@@ -17,7 +17,7 @@
 
 ---
 
-## About
+## 🔍 About
 
 > [!IMPORTANT]
 > **Model Training Notebook**: The full pipeline - data loading, preprocessing, model training, and evaluation - is available in [`train_model.ipynb`](notebook/train_model.ipynb).
@@ -33,7 +33,7 @@ The backend is a FastAPI app that loads the TF-IDF + Naive Bayes pipeline once a
 
 ---
 
-## Features
+## ✨ Features
 
 ### Core Classification Engine
 
@@ -70,7 +70,7 @@ The backend is a FastAPI app that loads the TF-IDF + Naive Bayes pipeline once a
 
 ---
 
-## Built With
+## 🛠️ Built With
 
 | Technology | Role in this project |
 |---|---|
@@ -88,7 +88,7 @@ The stack was chosen deliberately. Naive Bayes is fast, interpretable, and perfo
 
 ---
 
-## Model Evaluation
+## 📊 Model Evaluation
 
 These plots are generated during training and saved to `model/results/`.
 
@@ -117,7 +117,7 @@ These plots are generated during training and saved to `model/results/`.
 
 ---
 
-## Technical Details
+## ⚙️ Technical Details
 
 ### Project Structure
 
@@ -198,7 +198,7 @@ Response:
 
 `text` is required and must be between 1 and 5,000 characters. Violations return a `422` with a field-level error message before reaching the model.
 
-### Local Setup
+### 💻 Local Setup
 
 ```bash
 # 1. Clone the repo
@@ -219,14 +219,14 @@ uvicorn app.main:app --host 127.0.0.1 --port 8000
 
 Open `http://127.0.0.1:8000/` - the frontend is served automatically.
 
-### Deployment
+### 🚀 Deployment
 
 Deployed on **Render** as a single web service. FastAPI serves both the API routes and the static frontend from one process - no separate frontend hosting needed.
 
 | Setting | Value |
 |---|---|
 | **Build command** | `pip install -r requirements.txt` |
-| **Start command** | `uvicorn main:app --host 0.0.0.0 --port $PORT` |
+| **Start command** | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
 | **Runtime** | Python 3.13+ |
 | **Plan** | Free tier (cold starts ~30s after inactivity) |
 
