@@ -13,6 +13,8 @@
 
 *Paste a message. Know in milliseconds if it's spam.*
 
+[![Live Demo](https://img.shields.io/badge/%E2%96%B2_LIVE_DEMO-00C7B7?style=for-the-badge&logoColor=white)](https://spam-detection-0rq5.onrender.com/)
+
 </div>
 
 ---
@@ -30,6 +32,21 @@ The backend is a FastAPI app that loads the TF-IDF + Logistic Regression pipelin
 
 > [!NOTE]
 > The model achieves a **Spam F1-score of 91.85%** with **92% precision and 92% recall** on a hybrid SMS + Email dataset. This ensures it catches email spam while staying accurate on text messages.
+
+---
+
+## 🌐 Live Demo
+
+<div align="center">
+
+[![Live Demo](https://img.shields.io/badge/%E2%96%B2_LIVE_DEMO-00C7B7?style=for-the-badge&logoColor=white)](https://spam-detection-0rq5.onrender.com/)
+
+*Try it yourself - paste a message and see the analyzer in action.*
+
+</div>
+
+> [!NOTE]
+> This app is hosted on Render's free tier, which spins down after periods of inactivity. If it's been idle for a while, the first request may take 30-50 seconds to wake the server up - every request after that is instant.
 
 ---
 
