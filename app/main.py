@@ -7,13 +7,11 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, field_validator
 import numpy as np
 
-# Resolve project root from app/main.py
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 model_path = os.path.join(project_root, 'model', 'model.pkl')
 pipeline = joblib.load(model_path)
 
 app = FastAPI(title="Spam Detection API", version="1.0.0")
-
 
 class Message(BaseModel):
     text: str
@@ -28,13 +26,11 @@ class Message(BaseModel):
             raise ValueError('Message too long (max 5000 characters)')
         return v
 
-
 class PredictionResponse(BaseModel):
     prediction: str
     confidence: float
     label: str
     signals: list[dict] = []
-
 
 def clean_text(text: str) -> str:
     text = text.lower()
@@ -42,7 +38,6 @@ def clean_text(text: str) -> str:
     text = re.sub(r'[^\w\s]', '', text)
     text = re.sub(r'\s+', ' ', text).strip()
     return text
-
 
 def get_model_signals(text: str, prediction: str) -> list[dict]:
     try:
@@ -79,17 +74,14 @@ def get_model_signals(text: str, prediction: str) -> list[dict]:
             if score > 0.5:
                 signals.append({"word": word, "score": round(score, 2)})
                 
-        # Sort by impact descending
         signals.sort(key=lambda s: s["score"], reverse=True)
         return signals[:5]
     except Exception:
         return []
 
-
 @app.get("/health")
 def health():
     return {"status": "ok", "model": "loaded"}
-
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(message: Message):
@@ -108,13 +100,10 @@ def predict(message: Message):
         signals=signals
     )
 
-
 static_dir = os.path.join(project_root, 'static')
-
 
 @app.get("/")
 def serve_index():
     return FileResponse(os.path.join(static_dir, 'index.html'))
-
 
 app.mount("/static", StaticFiles(directory=static_dir), name="static")

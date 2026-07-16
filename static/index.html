@@ -3,57 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spam Filter</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230f172a'/><path d='M7 8h18L19 18v7h-6v-7Z' fill='%23e2e8f0'/></svg>">
-    <meta name="description" content="A minimalist de-noising tool for detecting spam anomalies in text communication.">
+    <title>Spam Detector</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232563eb'/><path d='M7 9h18L19 17v8h-6v-8Z' fill='%23ffffff'/></svg>">
+    <meta name="description" content="A minimalist diagnostic interface for detecting spam anomalies in communication signals.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div class="grain-overlay" aria-hidden="true"></div>
-
-    <main class="analyzer-card">
-        <header class="card-header">
-            <div class="app-info">
+    <div class="app-container">
+        
+        <header class="app-header">
+            <div class="header-left">
+                <svg class="app-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" fill="var(--color-accent)" fill-opacity="0.15" stroke="var(--color-accent)" />
+                    <path d="M2 17l10 5 10-5" stroke="var(--color-rule-2)" />
+                    <path d="M2 12l10 5 10-5" stroke="var(--color-rule-2)" />
+                </svg>
+                <span class="wordmark">SPAM_DETECTOR</span>
                 <span class="pulse-indicator" id="pulse-dot"></span>
-                <h1 class="app-title">SPAM FILTER</h1>
+            </div>
+            <div class="header-right">
+                <button type="button" class="cmdk-trigger" id="cmdk-trigger-btn">
+                    <span class="cmdk-trigger-text">Search commands</span>
+                    <kbd class="cmdk-trigger-kbd">⌘K</kbd>
+                </button>
             </div>
         </header>
 
-        <!-- Input Section -->
-        <section class="input-section">
-            <div class="section-label">
-                <span class="label-text">MESSAGE TEXT</span>
-                <span class="label-mono char-count" id="char-count">0000/5000</span>
-            </div>
-            <div class="input-wrapper">
-                <textarea 
-                    id="message-input" 
-                    placeholder="Paste or type your message here to check for spam..." 
-                    maxlength="5000"
-                    rows="4"
-                ></textarea>
-                <div class="analysis-beam" id="analysis-beam" hidden></div>
-            </div>
-            <div class="action-row">
-                <button id="check-btn" class="action-btn" type="button" aria-label="Analyze message for spam">
-                    <span class="btn-text">CHECK FOR SPAM</span>
-                    <span class="btn-arrow" aria-hidden="true">→</span>
-                </button>
-            </div>
-        </section>
+        <main class="bento-grid">
+            
+            <section class="bento-cell cell-input">
+                <div class="cell-label">
+                    <span class="label-mono">01 // SIGNAL INPUT</span>
+                    <span class="label-mono char-count" id="char-count">0000/5000</span>
+                </div>
+                <div class="input-container">
+                    <textarea 
+                        id="message-input" 
+                        placeholder="Paste message contents here to analyze for spam anomalies..." 
+                        maxlength="5000"
+                        rows="6"
+                    ></textarea>
+                    <div class="analysis-beam" id="analysis-beam" hidden></div>
+                </div>
+                <div class="action-row">
+                    <button id="check-btn" class="action-btn" type="button" aria-label="Analyze message for spam">
+                        <span class="btn-text">RUN DIAGNOSIS</span>
+                        <span class="btn-arrow" aria-hidden="true">→</span>
+                    </button>
+                </div>
+            </section>
 
-        <!-- Spectrogram (Signature Element) -->
-        <section class="spectrogram-section" id="spectrogram-section" aria-live="polite" aria-atomic="true">
-            <div class="section-label">
-                <span class="label-text">ANALYSIS VISUALIZER</span>
-                <span class="label-mono" id="status-text">READY TO CHECK</span>
-            </div>
-
-            <div class="visualizer-stage">
-                <!-- 12 Equalizer Bars -->
+            <section class="bento-cell cell-visualizer cell-graphite" id="spectrogram-section" aria-live="polite" aria-atomic="true">
+                <div class="cell-label">
+                    <span class="label-mono graphite-text">02 // SIGNAL SPECTRUM</span>
+                    <span class="label-mono graphite-text" id="status-text">READY</span>
+                </div>
                 <div class="spectrogram-container" id="spectrogram">
                     <div class="spec-bar" style="--height: 30%"></div>
                     <div class="spec-bar" style="--height: 45%"></div>
@@ -68,73 +75,142 @@
                     <div class="spec-bar" style="--height: 35%"></div>
                     <div class="spec-bar" style="--height: 20%"></div>
                 </div>
+            </section>
 
-                <!-- Metrics overlay on side -->
-                <div class="metrics-overlay" id="metrics-overlay" hidden>
-                    <div class="metric-group">
-                        <span class="metric-label">VERDICT</span>
-                        <span class="metric-value" id="signal-state">CLEAN</span>
+            <section class="bento-cell cell-metrics cell-graphite">
+                <div class="cell-label">
+                    <span class="label-mono graphite-text">03 // VERDICT OUTPUT</span>
+                </div>
+                <div class="metrics-wrapper">
+                    
+                    <div class="metrics-overlay" id="metrics-overlay" hidden>
+                        <div class="metric-group">
+                            <span class="metric-label">CLASSIFICATION</span>
+                            <span class="metric-value" id="signal-state">CLEAN</span>
+                        </div>
+                        <div class="metric-group">
+                            <span class="metric-label">CONFIDENCE</span>
+                            <span class="metric-value" id="confidence-val">00.0%</span>
+                        </div>
                     </div>
-                    <div class="metric-group">
-                        <span class="metric-label">CONFIDENCE</span>
-                        <span class="metric-value" id="confidence-val">00.0%</span>
+                    
+                    <div class="metrics-placeholder" id="metrics-placeholder">
+                        <p class="placeholder-text">Awaiting input signal...</p>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Diagnostics log / Reset controls -->
-            <div class="diagnostics-log" id="diagnostics-log" hidden>
-                <div class="diagnostics-content">
+            <section class="bento-cell cell-signals">
+                <div class="cell-label">
+                    <span class="label-mono">04 // SIGNAL INSPECTOR</span>
+                </div>
+                <div class="diagnostics-log" id="diagnostics-log" hidden>
                     <p class="diagnostics-desc" id="diagnostics-desc">No spam signatures detected. This message appears to be safe.</p>
                     <div class="signal-inspector" id="signal-inspector" hidden>
-                        <span class="inspector-title">KEY SIGNALS DETECTED</span>
+                        <span class="inspector-title">INFLUENTIAL SIGNALS (LOG-ODDS WEIGHT)</span>
                         <div class="signals-list" id="signals-list"></div>
                     </div>
+                    <div class="reset-row">
+                        <button id="try-again-btn" class="reset-btn" type="button">RESET FIELD</button>
+                    </div>
                 </div>
-                <button id="try-again-btn" class="reset-btn" type="button">NEW CHECK</button>
-            </div>
-
-            <!-- Error container -->
-            <div class="error-container" id="error-container" hidden>
-                <div class="error-header">
-                    <span class="error-badge">ERR.0x9C</span>
-                    <span class="error-message" id="error-text">Failed to establish model connection.</span>
+                
+                <div class="inspector-placeholder" id="inspector-placeholder">
+                    <p class="placeholder-text">Run analysis to inspect word-level features.</p>
                 </div>
-                <button id="retry-btn" class="reset-btn" type="button">RETRY CONNECTION</button>
-            </div>
-        </section>
+                
+                <div class="error-container" id="error-container" hidden>
+                    <div class="error-header">
+                        <span class="error-badge">ERR.0x9C</span>
+                        <span class="error-message" id="error-text">Failed to establish model connection.</span>
+                    </div>
+                    <button id="retry-btn" class="reset-btn" type="button">RETRY CONNECTION</button>
+                </div>
+            </section>
 
-        <!-- Reference Payloads -->
-        <section class="payload-section">
-            <div class="section-label">
-                <span class="label-text">SELECT AN EXAMPLE MESSAGE</span>
-            </div>
-            <div class="payloads-grid">
-                <button class="payload-chip" type="button" data-text="CONGRATULATIONS! You've been selected for a free iPhone 15! Click here to claim: bit.ly/free-prize NOW!">
-                    SPAM EXAMPLE 1
-                </button>
-                <button class="payload-chip" type="button" data-text="Hey, are we still meeting for lunch tomorrow at the usual place?">
-                    HAM EXAMPLE 1
-                </button>
-                <button class="payload-chip" type="button" data-text="URGENT: Your bank account has been compromised! Call 0800-FAKE-NUM immediately to secure your account!">
-                    SPAM EXAMPLE 2
-                </button>
-                <button class="payload-chip" type="button" data-text="Can you pick up some milk on your way home? We're also out of bread.">
-                    HAM EXAMPLE 2
-                </button>
-            </div>
-        </section>
+            <section class="bento-cell cell-examples">
+                <div class="cell-label">
+                    <span class="label-mono">05 // REFERENCE PAYLOADS</span>
+                </div>
+                <div class="payloads-grid">
+                    <button class="payload-chip" type="button" data-text="CONGRATULATIONS! You've been selected for a free iPhone 15! Click here to claim: bit.ly/free-prize NOW!">
+                        SPAM // FREE IPHONE PRIZE
+                    </button>
+                    <button class="payload-chip" type="button" data-text="Hey, are we still meeting for lunch tomorrow at the usual place?">
+                        HAM // LUNCH MEETING
+                    </button>
+                    <button class="payload-chip" type="button" data-text="URGENT: Your bank account has been compromised! Call 0800-FAKE-NUM immediately to secure your account!">
+                        SPAM // BANK COMPROMISED
+                    </button>
+                    <button class="payload-chip" type="button" data-text="Can you pick up some milk on your way home? We're also out of bread.">
+                        HAM // MILK GATHERING
+                    </button>
+                    <button class="payload-chip" type="button" data-text="ALERT: Bitcoin is surging! Get 2x returns in 24 hours. Sign up now at bit.ly/easy-crypto-riches before the launch!">
+                        SPAM // CRYPTO INVEST
+                    </button>
+                    <button class="payload-chip" type="button" data-text="Hi, I have reviewed the code updates for the project. Everything looks solid, let's schedule a call tomorrow to finalize.">
+                        HAM // CODE REVIEW
+                    </button>
+                </div>
+            </section>
+        </main>
 
-        <footer class="card-footer">
+        <footer class="app-footer">
             <div class="footer-stats">
-                <span>TRAINED ON: 11,300 MESSAGES</span>
-                <span>SPAM F1: 91.85%</span>
-                <span>MODEL: LOGISTIC REGRESSION</span>
+                <span>DATA: 11,300 MESSAGES</span>
+                <span>METRIC: 91.85% SPAM F1</span>
+                <span>PIPELINE: TF-IDF + LOGISTIC REGRESSION</span>
             </div>
         </footer>
-    </main>
+    </div>
+
+    <dialog id="cmdk-dialog" class="cmdk-dialog">
+        <div class="cmdk-box">
+            <div class="cmdk-input-wrapper">
+                <svg class="cmdk-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="cmdk-input" placeholder="Type a command or search..." autocomplete="off" spellcheck="false" />
+                <kbd class="cmdk-esc-kbd">ESC</kbd>
+            </div>
+            <div class="cmdk-list" id="cmdk-list" role="listbox">
+                <div class="cmdk-group-title">COMMANDS</div>
+                <div class="cmdk-item" role="option" data-value="check" tabindex="0">
+                    <span class="cmdk-item-name">Analyze Message Input</span>
+                    <span class="cmdk-item-shortcut">↵</span>
+                </div>
+                <div class="cmdk-item" role="option" data-value="clear" tabindex="0">
+                    <span class="cmdk-item-name">Clear & Reset Analyzer</span>
+                    <span class="cmdk-item-shortcut">⌥C</span>
+                </div>
+                <div class="cmdk-group-title">REFERENCE EXAMPLES</div>
+                <div class="cmdk-item" role="option" data-value="spam1" tabindex="0">
+                    <span class="cmdk-item-name">Load Spam Example 1 (iPhone Prize)</span>
+                    <span class="cmdk-item-shortcut">⌘1</span>
+                </div>
+                <div class="cmdk-item" role="option" data-value="ham1" tabindex="0">
+                    <span class="cmdk-item-name">Load Ham Example 1 (Lunch Meet)</span>
+                    <span class="cmdk-item-shortcut">⌘2</span>
+                </div>
+                <div class="cmdk-item" role="option" data-value="spam2" tabindex="0">
+                    <span class="cmdk-item-name">Load Spam Example 2 (Bank Compromise)</span>
+                    <span class="cmdk-item-shortcut">⌘3</span>
+                </div>
+                <div class="cmdk-item" role="option" data-value="ham2" tabindex="0">
+                    <span class="cmdk-item-name">Load Ham Example 2 (Milk Shopping)</span>
+                    <span class="cmdk-item-shortcut">⌘4</span>
+                </div>
+                <div class="cmdk-item" role="option" data-value="spam3" tabindex="0">
+                    <span class="cmdk-item-name">Load Spam Example 3 (Crypto Invest)</span>
+                    <span class="cmdk-item-shortcut">⌘5</span>
+                </div>
+                <div class="cmdk-item" role="option" data-value="ham3" tabindex="0">
+                    <span class="cmdk-item-name">Load Ham Example 3 (Code Review)</span>
+                    <span class="cmdk-item-shortcut">⌘6</span>
+                </div>
+
+            </div>
+        </div>
+    </dialog>
 
     <script src="/static/script.js"></script>
 </body>
 </html>
-

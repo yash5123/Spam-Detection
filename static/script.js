@@ -4,36 +4,40 @@
     const checkBtn = document.getElementById('check-btn');
     const analysisBeam = document.getElementById('analysis-beam');
     const pulseDot = document.getElementById('pulse-dot');
-    
-    // Displays
+
     const spectrogram = document.getElementById('spectrogram');
     const statusText = document.getElementById('status-text');
     const metricsOverlay = document.getElementById('metrics-overlay');
+    const metricsPlaceholder = document.getElementById('metrics-placeholder');
     const signalState = document.getElementById('signal-state');
     const confidenceVal = document.getElementById('confidence-val');
+    
     const diagnosticsLog = document.getElementById('diagnostics-log');
     const diagnosticsDesc = document.getElementById('diagnostics-desc');
+    const inspectorPlaceholder = document.getElementById('inspector-placeholder');
     const signalInspector = document.getElementById('signal-inspector');
     const signalsList = document.getElementById('signals-list');
+    
     const errorContainer = document.getElementById('error-container');
     const errorText = document.getElementById('error-text');
     
     const tryAgainBtn = document.getElementById('try-again-btn');
     const retryBtn = document.getElementById('retry-btn');
     const payloadChips = document.querySelectorAll('.payload-chip');
-    
     const specBars = document.querySelectorAll('.spec-bar');
-    
+
+    const cmdkTrigger = document.getElementById('cmdk-trigger-btn');
+    const cmdkDialog = document.getElementById('cmdk-dialog');
+    const cmdkInput = document.getElementById('cmdk-input');
+    const cmdkItems = Array.from(document.querySelectorAll('.cmdk-item'));
+
     const COLD_START_MS = 5000;
     const FETCH_TIMEOUT_MS = 120000;
 
-    // Default static height styles for idle state
     const IDLE_HEIGHTS = ['30%', '45%', '60%', '50%', '35%', '25%', '40%', '55%', '70%', '50%', '35%', '20%'];
-    
-    // Low, calm, damped heights for Clean verdict
+
     const CLEAN_HEIGHTS = ['15%', '20%', '25%', '20%', '18%', '15%', '22%', '25%', '20%', '18%', '15%', '12%'];
-    
-    // High-amplitude, jagged, erratic heights for Spam verdict
+
     const SPAM_HEIGHTS = ['75%', '90%', '65%', '85%', '95%', '50%', '80%', '95%', '70%', '85%', '90%', '60%'];
 
     function applyBarHeights(heights) {
@@ -42,19 +46,23 @@
         });
     }
 
-    // Character counter
     input.addEventListener('input', () => {
         const len = input.value.length;
         const paddedCount = String(len).padStart(4, '0');
         charCount.textContent = `${paddedCount}/5000`;
     });
 
-    // Payloads selection
-    payloadChips.forEach(chip => {
-        chip.addEventListener('click', () => {
-            input.value = chip.dataset.text;
+    function loadExample(index) {
+        if (payloadChips[index]) {
+            input.value = payloadChips[index].dataset.text;
             input.dispatchEvent(new Event('input'));
             input.focus();
+        }
+    }
+
+    payloadChips.forEach((chip, idx) => {
+        chip.addEventListener('click', () => {
+            loadExample(idx);
         });
     });
 
@@ -62,58 +70,59 @@
     retryBtn.addEventListener('click', resetAnalyzer);
 
     function resetAnalyzer() {
-        // Clear input field and update counter
+
         input.value = '';
         input.dispatchEvent(new Event('input'));
-        
-        // Hide overlay, logs, errors
+
         analysisBeam.hidden = true;
         metricsOverlay.hidden = true;
+        if (metricsPlaceholder) metricsPlaceholder.hidden = false;
+
         diagnosticsLog.hidden = true;
+        if (inspectorPlaceholder) inspectorPlaceholder.hidden = false;
+
         errorContainer.hidden = true;
         
         if (signalInspector) {
             signalInspector.hidden = true;
             signalsList.innerHTML = '';
         }
-        
-        // Reset classes
+
         spectrogram.className = 'spectrogram-container';
         pulseDot.className = 'pulse-indicator';
-        
-        // Apply default bar heights
+
         applyBarHeights(IDLE_HEIGHTS);
-        
-        // Reset status text
-        statusText.textContent = 'READY TO CHECK';
+
+        statusText.textContent = 'READY';
         
         input.focus();
     }
 
-    checkBtn.addEventListener('click', async () => {
+    async function runPrediction() {
         const text = input.value.trim();
         if (!text) {
             input.focus();
             return;
         }
 
-        // Setup loading state
         checkBtn.disabled = true;
         analysisBeam.hidden = false;
         errorContainer.hidden = true;
         metricsOverlay.hidden = true;
+        if (metricsPlaceholder) metricsPlaceholder.hidden = true;
+
         diagnosticsLog.hidden = true;
+        if (inspectorPlaceholder) inspectorPlaceholder.hidden = true;
         
         spectrogram.className = 'spectrogram-container state-loading';
         pulseDot.className = 'pulse-indicator';
-        
-        // Reset heights during anim (handled by CSS keyframes)
+
         specBars.forEach(bar => bar.style.height = '');
         
-        statusText.textContent = 'ANALYZING MESSAGE...';
+        statusText.textContent = 'ANALYZING SIGNAL...';
 
         let coldStartTimer = setTimeout(() => {
-            statusText.textContent = 'WAKING UP MODEL SERVER (COLD START)...';
+            statusText.textContent = 'WAKING UP SERVER (COLD START)...';
         }, COLD_START_MS);
 
         const controller = new AbortController();
@@ -160,7 +169,9 @@
             checkBtn.disabled = false;
             analysisBeam.hidden = true;
         }
-    });
+    }
+
+    checkBtn.addEventListener('click', runPrediction);
 
     function showResult(data) {
         const isSpam = data.prediction === 'spam';
@@ -173,7 +184,7 @@
             
             signalState.textContent = 'SPAM';
             signalState.className = 'metric-value state-spam';
-            statusText.textContent = 'ANALYSIS COMPLETE: SPAM DETECTED';
+            statusText.textContent = 'SPAM ANOMALY DETECTED';
             diagnosticsDesc.textContent = `Spam signature detected. This message contains marketing, promotional, or potential scam/phishing elements.`;
         } else {
             spectrogram.className = 'spectrogram-container state-clean';
@@ -182,14 +193,15 @@
             
             signalState.textContent = 'CLEAN';
             signalState.className = 'metric-value state-clean';
-            statusText.textContent = 'ANALYSIS COMPLETE: SAFE MESSAGE';
+            statusText.textContent = 'SAFE MESSAGE';
             diagnosticsDesc.textContent = `No spam signatures detected. This message appears to be safe and legitimate.`;
         }
 
         confidenceVal.textContent = `${confidence}%`;
+        
+        if (metricsPlaceholder) metricsPlaceholder.hidden = true;
         metricsOverlay.hidden = false;
 
-        // Render signal chips
         if (data.signals && data.signals.length > 0) {
             signalsList.innerHTML = '';
             data.signals.forEach(sig => {
@@ -214,6 +226,7 @@
             signalsList.innerHTML = '';
         }
 
+        if (inspectorPlaceholder) inspectorPlaceholder.hidden = true;
         diagnosticsLog.hidden = false;
     }
 
@@ -226,7 +239,154 @@
         errorContainer.hidden = false;
     }
 
-    // Set initial heights on page load
+    let currentSelected = null;
+
+    function openCmdk() {
+        cmdkDialog.showModal();
+        cmdkInput.value = '';
+        filterCmdk();
+        setTimeout(() => cmdkInput.focus(), 30);
+    }
+
+    function executeCommand(val) {
+        cmdkDialog.close();
+        if (val === 'check') {
+            runPrediction();
+        } else if (val === 'clear') {
+            resetAnalyzer();
+        } else if (val === 'spam1') {
+            loadExample(0);
+        } else if (val === 'ham1') {
+            loadExample(1);
+        } else if (val === 'spam2') {
+            loadExample(2);
+        } else if (val === 'ham2') {
+            loadExample(3);
+        } else if (val === 'spam3') {
+            loadExample(4);
+        } else if (val === 'ham3') {
+            loadExample(5);
+        }
+    }
+
+    function updateCmdkSelection(item) {
+        if (currentSelected) {
+            currentSelected.classList.remove('is-selected');
+        }
+        currentSelected = item;
+        if (currentSelected) {
+            currentSelected.classList.add('is-selected');
+            currentSelected.scrollIntoView({ block: 'nearest' });
+        }
+    }
+
+    function getVisibleItems() {
+        return cmdkItems.filter(item => item.style.display !== 'none');
+    }
+
+    function filterCmdk() {
+        const query = cmdkInput.value.toLowerCase().trim();
+        let firstVisible = null;
+
+        cmdkItems.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            const matches = text.includes(query);
+            item.style.display = matches ? 'flex' : 'none';
+            if (matches && !firstVisible) {
+                firstVisible = item;
+            }
+        });
+
+        const groups = document.querySelectorAll('#cmdk-list > *');
+        let currentGroupTitle = null;
+        let visibleInGroup = 0;
+        
+        groups.forEach(node => {
+            if (node.classList.contains('cmdk-group-title')) {
+                if (currentGroupTitle && visibleInGroup === 0) {
+                    currentGroupTitle.style.display = 'none';
+                }
+                currentGroupTitle = node;
+                visibleInGroup = 0;
+            } else if (node.classList.contains('cmdk-item')) {
+                if (node.style.display !== 'none') {
+                    visibleInGroup++;
+                }
+            }
+        });
+        if (currentGroupTitle && visibleInGroup === 0) {
+            currentGroupTitle.style.display = 'none';
+        } else if (currentGroupTitle) {
+            currentGroupTitle.style.display = 'block';
+        }
+
+        updateCmdkSelection(firstVisible);
+    }
+
+    cmdkTrigger.addEventListener('click', openCmdk);
+    cmdkInput.addEventListener('input', filterCmdk);
+
+    cmdkInput.addEventListener('keydown', (e) => {
+        const visible = getVisibleItems();
+        if (visible.length === 0) return;
+
+        let index = visible.indexOf(currentSelected);
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            index = (index + 1) % visible.length;
+            updateCmdkSelection(visible[index]);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            index = (index - 1 + visible.length) % visible.length;
+            updateCmdkSelection(visible[index]);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (currentSelected) {
+                executeCommand(currentSelected.dataset.value);
+            }
+        }
+    });
+
+    cmdkDialog.addEventListener('click', (e) => {
+        const rect = cmdkDialog.getBoundingClientRect();
+        if (e.clientX < rect.left || e.clientX > rect.right || 
+            e.clientY < rect.top || e.clientY > rect.bottom) {
+            cmdkDialog.close();
+        }
+    });
+
+    cmdkItems.forEach(item => {
+        item.addEventListener('click', () => {
+            executeCommand(item.dataset.value);
+        });
+        item.addEventListener('mouseenter', () => {
+            updateCmdkSelection(item);
+        });
+    });
+
+    window.addEventListener('keydown', (e) => {
+
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            e.preventDefault();
+            openCmdk();
+        }
+
+        if (!cmdkDialog.open) {
+
+            if (e.altKey && e.key.toLowerCase() === 'c') {
+                e.preventDefault();
+                resetAnalyzer();
+            }
+
+            if ((e.metaKey || e.ctrlKey) && ['1','2','3','4','5','6'].includes(e.key)) {
+                e.preventDefault();
+                const idx = parseInt(e.key) - 1;
+                loadExample(idx);
+            }
+        }
+    });
+
     applyBarHeights(IDLE_HEIGHTS);
     input.focus();
 })();

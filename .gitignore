@@ -4,3 +4,5 @@ __pycache__/
 data/extracted/
 data/sms_spam.zip
 .env
+model_temp.pkl
+*.log
